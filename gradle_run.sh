@@ -15,7 +15,7 @@ if [ $? -ne 0 ] ; then
 else
     eval sudo $(aws ecr get-login) || exit 3
 	echo "docker gradle run $@"
-	docker run --volume=$(pwd):/tmp/project gcr.io/anyvision-training/android-ci /bin/bash -c "./gradlew $@"
+	docker run --volume=$(pwd):/tmp/project javiersantos/android-ci:28.0.3 /bin/bash -c "cd /tmp/project && ./gradlew $@"
 	if [ $? -ne 0 ] ; then
 		echo "failed to run gradle docker for $@"
 		exit 99
