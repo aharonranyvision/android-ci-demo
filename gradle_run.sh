@@ -14,7 +14,7 @@ if [ $? -ne 0 ] ; then
 	exit 2
 else
 	echo "docker gradle run $@"
-	docker run -it --volume=$(pwd):/tmp/project gcr.io/anyvision-training/android-ci /bin/bash -c "./gradlew $@"
+	docker run --volume=$(pwd):/tmp/project gcr.io/anyvision-training/android-ci /bin/bash -c "./gradlew $@"
 	if [ $? -ne 0 ] ; then
 		echo "failed to run gradle docker for $@"
 		exit 99
