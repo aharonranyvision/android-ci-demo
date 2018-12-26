@@ -1,7 +1,7 @@
 pipeline {
   agent {
     // Run on a build agent where we have the Android SDK installed
-    label 'android'
+    label 'cicd'
   }
   options {
     // Stop the build early in case of compile or test failures
@@ -11,13 +11,13 @@ pipeline {
     stage('Compile') {
       steps {
         // Compile the app and its dependencies
-        sh './gradlew compileDebugSources'
+        sh 'docker run -it --volume=$(pwd):/tmp/project gcr.io/anyvision-training/android-ci /bin/bash -c "./gradlew compileDebugSources"'
       }
     }
     stage('Unit test') {
       steps {
         // Compile and run the unit tests for the app and its dependencies
-        sh './gradlew testDebugUnitTest testDebugUnitTest'
+        sh 'docker run -it --volume=$(pwd):/tmp/project gcr.io/anyvision-training/android-ci /bin/bash -c "./gradlew testDebugUnitTest testDebugUnitTest"'
 
         // Analyse the test results and update the build result as appropriate
         junit '**/TEST-*.xml'
@@ -26,7 +26,7 @@ pipeline {
     stage('Build APK') {
       steps {
         // Finish building and packaging the APK
-        sh './gradlew assembleDebug'
+        sh 'docker run -it --volume=$(pwd):/tmp/project gcr.io/anyvision-training/android-ci /bin/bash -c "./gradlew assembleDebug"'
 
         // Archive the APKs so that they can be downloaded from Jenkins
         archiveArtifacts '**/*.apk'
@@ -35,7 +35,7 @@ pipeline {
     stage('Static analysis') {
       steps {
         // Run Lint and analyse the results
-        sh './gradlew lintDebug'
+        sh 'docker run -it --volume=$(pwd):/tmp/project gcr.io/anyvision-training/android-ci /bin/bash -c "./gradlew lintDebug"'
         androidLint pattern: '**/lint-results-*.xml'
       }
     }
@@ -66,7 +66,7 @@ pipeline {
       post {
         success {
           // Notify if the upload succeeded
-          mail to: 'beta-testers@example.com', subject: 'New build available!', body: 'Check it out!'
+          mail to: 'aharonr@anyvision.co', subject: 'New build available!', body: 'Check it out!'
         }
       }
     }
@@ -74,7 +74,7 @@ pipeline {
   post {
     failure {
       // Notify developer team of the failure
-      mail to: 'android-devs@example.com', subject: 'Oops!', body: "Build ${env.BUILD_NUMBER} failed; ${env.BUILD_URL}"
+      mail to: 'aharonr@anyvision.co', subject: 'Oops!', body: "Build ${env.BUILD_NUMBER} failed; ${env.BUILD_URL}"
     }
   }
 }
