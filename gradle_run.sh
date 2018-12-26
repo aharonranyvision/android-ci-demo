@@ -13,6 +13,7 @@ if [ $? -ne 0 ] ; then
 	echo "Cannot run the docker build step"
 	exit 2
 else
+    eval sudo $(aws ecr get-login) || exit 3
 	echo "docker gradle run $@"
 	docker run --volume=$(pwd):/tmp/project gcr.io/anyvision-training/android-ci /bin/bash -c "./gradlew $@"
 	if [ $? -ne 0 ] ; then
