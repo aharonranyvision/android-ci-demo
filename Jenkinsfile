@@ -65,8 +65,14 @@ pipeline {
       }
       post {
         success {
-          // Notify if the upload succeeded
-          mail to: 'aharonr@anyvision.co', subject: 'New build available!', body: 'Check it out!'
+         emailext(
+                            subject: "New build available!",
+                            body: "Check it out!",
+                            to: "aharonr@anyvision.co",
+                            replyTo: 'aharonr@anyvision.co',
+                            attachLog: false,
+                            compressLog: false,
+                   )
         }
       }
     }
@@ -74,7 +80,14 @@ pipeline {
   post {
     failure {
       // Notify developer team of the failure
-      mail to: 'aharonr@anyvision.co', subject: 'Oops!', body: "Build ${env.BUILD_NUMBER} failed; ${env.BUILD_URL}"
+       emailext(
+                                  subject: "Oops!",
+                                  body: "Build ${env.BUILD_NUMBER} failed; ${env.BUILD_URL}",
+                                  to: "aharonr@anyvision.co",
+                                  replyTo: 'aharonr@anyvision.co',
+                                  attachLog: true,
+                                  compressLog: true,
+                         )
     }
   }
 }
