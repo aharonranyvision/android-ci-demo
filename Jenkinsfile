@@ -11,13 +11,13 @@ pipeline {
     stage('Compile') {
       steps {
         // Compile the app and its dependencies
-        sh 'docker run -it --volume=$(pwd):/tmp/project gcr.io/anyvision-training/android-ci /bin/bash -c "./gradlew compileDebugSources"'
+        sh './gradle_run.sh compileDebugSources'
       }
     }
     stage('Unit test') {
       steps {
         // Compile and run the unit tests for the app and its dependencies
-        sh 'docker run -it --volume=$(pwd):/tmp/project gcr.io/anyvision-training/android-ci /bin/bash -c "./gradlew testDebugUnitTest testDebugUnitTest"'
+        sh './gradle_run.sh testDebugUnitTest testDebugUnitTest'
 
         // Analyse the test results and update the build result as appropriate
         junit '**/TEST-*.xml'
@@ -26,7 +26,7 @@ pipeline {
     stage('Build APK') {
       steps {
         // Finish building and packaging the APK
-        sh 'docker run -it --volume=$(pwd):/tmp/project gcr.io/anyvision-training/android-ci /bin/bash -c "./gradlew assembleDebug"'
+        sh './gradle_run.sh assembleDebug'
 
         // Archive the APKs so that they can be downloaded from Jenkins
         archiveArtifacts '**/*.apk'
@@ -35,7 +35,7 @@ pipeline {
     stage('Static analysis') {
       steps {
         // Run Lint and analyse the results
-        sh 'docker run -it --volume=$(pwd):/tmp/project gcr.io/anyvision-training/android-ci /bin/bash -c "./gradlew lintDebug"'
+        sh './gradle_run.sh lintDebug'
         androidLint pattern: '**/lint-results-*.xml'
       }
     }
